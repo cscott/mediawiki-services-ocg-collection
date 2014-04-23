@@ -4,7 +4,7 @@
 SCRIPTPATH=`dirname $(readlink -f ./make.sh)`
 mkdir -p node_modules
 
-for f in ./mw-ocg*
+for f in ./mw-ocg*/
 do
 	ln -s $SCRIPTPATH/node_modules $f/node_modules
 	cd $f
