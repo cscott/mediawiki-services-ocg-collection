@@ -1,0 +1,36 @@
+{
+  "name": "mw-ocg-service-bundle",
+  "description": "Common build dependency bundle for the MediaWiki Offline Content Generator",
+  "repository": {
+    "type": "git",
+    "url": "gerrit.wikimedia.org/r/mediawiki/services/ocg-collection"
+  },
+  "dependencies": {
+    "commander": "~2.1.0",
+    "domino": "~1.0.15",
+    "es6-shim": "~0.9.1",
+    "node-syslog": "~1.1.7",
+    "request": "~2.31.0",
+    "rimraf": "~2.2.2",
+    "sqlite3": "~2.1.19",
+    "tmp": "~0.0.23",
+    "when": "~3.1.0",
+    "easyimage": "~0.1.3",
+    "gammalatex": "cscott/gammalatex#error-handling",
+    "icu-bidi": "~0.1.2",
+    "readable-stream": "~1.1.9",
+    "async": "~0.2.9",
+    "busboy": "0.0.12",
+    "mime": "~1.2.11",
+    "rconsole": "~0.2.0",
+    "redis": "~0.9.0",
+    "linewrap": "~0.2.1"
+  },
+  "optionalDependencies": {
+    "hiredis": "~0.1.15"
+  },
+  "devDependencies": {
+    "mocha": "1.*",
+    "jshint": ">=2.3.0"
+  }
+}
