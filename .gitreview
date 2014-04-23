@@ -3,3 +3,4 @@ host=gerrit.wikimedia.org
 port=29418
 project=mediawiki/services/ocg-collection.git
 defaultbranch=wmf-deploy
+defaultrebase=0
