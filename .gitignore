@@ -1,3 +1,5 @@
 node_modules/*
 
 LocalSettings.js
+
+.idea
