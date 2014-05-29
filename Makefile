@@ -1,9 +1,10 @@
 all: debug
 
 core:
-	rm ./package.json
+	export LINK=g++
+	rm -f ./package.json
 	npm cache clear
-	npm install when
+	npm install when semver
 	./unify-package-json.js
 	npm install
 	npm update
