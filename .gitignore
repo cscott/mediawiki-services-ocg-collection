@@ -1,5 +1,6 @@
 node_modules/*
 
 LocalSettings.js
+package.json
 
 .idea

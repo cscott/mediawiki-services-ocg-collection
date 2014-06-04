@@ -1,9 +1,8 @@
 all: debug
 
 core:
-	rm ./package.json
-	npm cache clear
-	npm install when
+	export LINK=g++
+	npm install semver when
 	./unify-package-json.js
 	npm install
 	npm update
@@ -17,4 +16,6 @@ debug: core
 	npm prune
 
 clean:
+	rm -f ./package.json
+	npm cache clear
 	rm -rf ./node_modules
