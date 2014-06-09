@@ -4,6 +4,7 @@ module.exports = function (config) {
 
 	config.backend.bundler.bin = "/srv/deployment/ocg/ocg/mw-ocg-bundler/bin/mw-ocg-bundler";
 	config.backend.writers.rdf2latex.bin = "/srv/deployment/ocg/ocg/mw-ocg-latexer/bin/mw-ocg-latexer";
+	config.backend.writers.rdf2text.bin = "/srv/deployment/ocg/ocg/mw-ocg-texter/bin/mw-ocg-texter";
 
 	return config;
 }
