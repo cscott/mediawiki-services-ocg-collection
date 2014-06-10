@@ -14,6 +14,7 @@
 var child_process = require( 'child_process' ),
 	semver = require( 'semver' ),
 	fs = require( 'fs' ),
+	path = require( 'path' ),
 	util = require( 'util' );
 
 try {
@@ -23,14 +24,13 @@ try {
 }
 
 function findPackageJson() {
-	return new Promise( function( resolve, reject ) {
-		child_process.exec(
-			'find . -path ./node_modules -prune -o -name package.json -print',
-			function( error, stdout, stderr ) {
-				files = stdout.trim().split( '\n' );
-				resolve( files );
-			}
-		)
+	var readdir = Promise.promisify(fs.readdir, fs);
+	return readdir( __dirname ).then( function( files ) {
+		return files.map( function( f ) {
+			return path.join( __dirname, f, "package.json" );
+		} ).filter( function ( f ) {
+			return fs.existsSync( f );
+		} );
 	} );
 }
 
@@ -45,64 +45,45 @@ function readPackageJson( files ) {
 function buildDependencies( packageObjs ) {
 	var glodeps, optdeps, glodevdeps;
 	var iterate = function iterate( key, arrayObj ) {
-		var unifiedDeps = {};
+		var unifiedDeps = new Map();
 
 		arrayObj.forEach( function( el ) {
 			var name = el.name,
-				packdeps = el[key],
-				pkg, glover, pkgver;
+			packdeps = el[key] || {};
 
-			for ( pkg in packdeps ) {
-				if ( !packdeps.hasOwnProperty( pkg ) ) {
-					continue;
+			Object.keys(packdeps).forEach( function( pkg ) {
+				var pkgver = packdeps[pkg];
+				if ( !unifiedDeps.has( pkg ) ) {
+					unifiedDeps.set( pkg, new Map() );
 				}
-
-				if ( pkg in unifiedDeps ) {
-					// Check to see if the versions are compatible
-					glover = unifiedDeps[pkg][0];
-					pkgver = packdeps[pkg];
-
-					// Strict equality is nice; they need the same thing
-					if ( glover === pkgver ) {
-						continue;
-					}
-
-					// If either is an approximate version (major / minor match) strip
-					// the tidle so semver can process and then see if the other requirement matches
-					if ( glover[0] === '~' && semver.satisfies( glover.substr( 1 ), pkgver ) ) {
-						continue;
-					}
-					if ( pkgver[0] === '~' && semver.satisfies( pkgver.substr( 1 ), glover ) ) {
-						continue;
-					}
-
-					// TODO: Handle greater than / less than.
-
-					console.error(
-						util.format(
-							'Could not reconcile common dependency on %s. %s requires %s where %s requires %s.',
-							pkg,
-							unifiedDeps[pkg][1], glover,
-							name, pkgver
-						)
-					);
-
-				} else {
-					// Not already used, just add it
-					unifiedDeps[pkg] = [packdeps[pkg], name];
+				var vermap = unifiedDeps.get( pkg );
+				if ( !vermap.has( pkgver ) ) {
+					vermap.set( pkgver, new Set() );
 				}
+				vermap.get( pkgver ).add( name );
+			} );
+		} );
+		// Go through and combine versions for a given package with the
+		// "and" operator (which for semver is a space) and let npm figure
+		// out how to satisfy the conflict.  But emit diagnostics on
+		// stderr to help us debug this if necessary.
+		var result = {};
+		unifiedDeps.forEach( function( vermap, pkg ) {
+			result[ pkg ] = Array.from( vermap.keys() ).join( ' ' );
+			var who = Array.from( vermap.values() );
+			if ( who.length > 1 ) {
+				console.warn(
+					util.format(
+						'* Could not reconcile common dependency on %s. (%s)',
+						pkg,
+						who.map( function( s ) {
+							return Array.from( s.values() ).join(' ');
+						}).join(', ')
+					)
+				);
 			}
 		} );
-
-		// Clean the metadata we left
-		for ( dep in unifiedDeps ) {
-			if ( !unifiedDeps.hasOwnProperty( dep ) ) {
-				continue;
-			}
-			unifiedDeps[dep] = unifiedDeps[dep][0];
-		}
-
-		return unifiedDeps;
+		return result;
 	};
 
 	console.info( 'Unifying runtime dependencies' );
