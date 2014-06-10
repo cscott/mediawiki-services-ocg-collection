@@ -4,7 +4,7 @@ core:
 	export LINK=g++
 	rm -f ./package.json
 	npm cache clear
-	npm install when semver
+	npm install prfun semver
 	./unify-package-json.js
 	npm install
 	npm update

@@ -7,8 +7,8 @@
  * It will throw errors if multiple files reference different versions of the
  * same upstream package.
  *
- * Ironically; this script itself has dependencies in the form of the when library
- * (because node.js for some stupid reason doesn't include promises anymore)
+ * Ironically; this script itself has dependencies in the form of the `prfun`
+ * library (since we want to use fancy non-standard Promise features).
  */
 
 var child_process = require( 'child_process' ),
@@ -17,13 +17,13 @@ var child_process = require( 'child_process' ),
 	util = require( 'util' );
 
 try {
-	var when = require('when');
+	require('prfun');
 } catch ( err ) {
-	console.err( "The 'when' library could not be loaded. Please `npm install when`")
+	console.err( "The 'prfun' library could not be loaded. Please `npm install prfun`")
 }
 
 function findPackageJson() {
-	return when.promise( function( resolve, reject, notify ) {
+	return new Promise( function( resolve, reject ) {
 		child_process.exec(
 			'find . -path ./node_modules -prune -o -name package.json -print',
 			function( error, stdout, stderr ) {
@@ -35,8 +35,7 @@ function findPackageJson() {
 }
 
 function readPackageJson( files ) {
-	return when.map(
-		files,
+	return files.map(
 		function( file ) {
 			return require( file );
 		}
@@ -134,16 +133,18 @@ function writePackageJson( deps ) {
 		devDependencies: deps.devDependencies
 	};
 
-	fs.writeFile( 'package.json', JSON.stringify( packageObj, null, 2 ), function( err ) {
-		console.log('wrote file');
-	} );
+	var writeFile = Promise.promisify(fs.writeFile, fs);
+	return writeFile( 'package.json', JSON.stringify( packageObj, null, 2 ) ).
+		then(function() {
+			console.log('wrote file');
+		} );
 }
 
 /* === Glue logic === */
 findPackageJson()
 	.then( readPackageJson )
-	.then( when.lift( buildDependencies ) )
+	.then( Promise.method( buildDependencies ) )
 	.then( writePackageJson )
-	.catch( function( err ) { console.error( err ) });
+	.done();
 
 
