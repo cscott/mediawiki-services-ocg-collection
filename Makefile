@@ -3,7 +3,6 @@ all: debug
 core:
 	export LINK=g++
 	rm -f ./package.json
-	npm cache clear
 	npm install prfun semver
 	./unify-package-json.js
 	npm install
