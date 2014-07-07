@@ -10,11 +10,11 @@
     "domino": "~1.0.17",
     "es6-shim": "~0.12.0",
     "node-syslog": "~1.1.7",
+    "prfun": "~0.1.0",
     "request": "~2.36.0",
     "rimraf": "~2.2.2",
     "sqlite3": "~2.1.19",
     "tmp": "~0.0.23",
-    "when": "~3.1.0",
     "easyimage": "~0.1.3",
     "gammalatex": "cscott/gammalatex#error-handling",
     "icu-bidi": "~0.1.2",
@@ -22,12 +22,15 @@
     "async": "~0.2.9",
     "busboy": "0.0.12",
     "mime": "~1.2.11",
-    "rconsole": "~0.2.0",
     "redis": "~0.9.0",
+    "winston": "~0.7.3",
+    "sprintf-js": "0.0.7",
     "linewrap": "~0.2.1"
   },
   "optionalDependencies": {
-    "hiredis": "~0.1.15"
+    "hiredis": "~0.1.15",
+    "winston-graylog2": "~0.1.10",
+    "winston-posix-syslog": "0.0.7"
   },
   "devDependencies": {
     "mocha": "~1.20.1",
