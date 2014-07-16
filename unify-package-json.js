@@ -24,7 +24,7 @@ try {
 }
 
 function findPackageJson() {
-	var readdir = Promise.promisify(fs.readdir, fs);
+	var readdir = Promise.promisify(fs.readdir, false, fs);
 	return readdir( __dirname ).then( function( files ) {
 		return files.map( function( f ) {
 			return path.join( __dirname, f, "package.json" );
